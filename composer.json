@@ -1,0 +1,20 @@
+{
+    "name": "jdz/jizy-packer",
+    "type": "library",
+    "description": "CLI app to generate optimized builds.",
+    "keywords": [
+        "JDZ",
+        "Jizy",
+        "Packer"
+    ],
+    "homepage": "https://jdz.joffreydemetz.com/jizy-packer",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Joffrey Demetz",
+            "email": "joffrey.demetz@gmail.com",
+            "homepage": "https://joffreydemetz.com",
+            "role": "Lead"
+        }
+    ]
+}
