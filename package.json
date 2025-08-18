@@ -1,6 +1,6 @@
 {
   "name": "jizy-packer",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "type": "module",
   "files": [
     "lib/*.js"
@@ -19,14 +19,28 @@
   "license": "MIT",
   "description": "CLI app to generate optimized builds.",
   "dependencies": {
+    "@babel/core": "^7.26.10",
+    "@babel/preset-env": "^7.26.9",
     "@rollup/plugin-commonjs": "^28.0.3",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-url": "^8.0.2",
+    "autoprefixer": "^10.4.21",
+    "babel-jest": "^29.7.0",
+    "clean-css": "^5.3.3",
+    "cross-env": "^7.0.3",
+    "cssnano": "^7.0.6",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jsdom": "^26.1.0",
+    "less": "^4.3.0",
+    "less-plugin-clean-css": "^1.6.0",
+    "postcss": "^8.5.3",
     "rollup": "^4.40.1",
     "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-delete": "^3.0.1",
+    "rollup-plugin-postcss": "^4.0.2",
     "yargs": "^17.7.2"
   }
 }
