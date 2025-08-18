@@ -1,10 +1,11 @@
 {
   "name": "jizy-packer",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "type": "module",
   "files": [
     "lib/*.js"
   ],
+  "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/joffreydemetz/jizy-packer.git"
