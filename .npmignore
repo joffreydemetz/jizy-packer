@@ -1,5 +1,4 @@
 node_modules/
-test/
 composer.json
 composer.lock
 package-lock.json
