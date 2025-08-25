@@ -15,9 +15,9 @@ A CLI tool and Node.js library to generate optimized builds for your projects. I
 ### CLI
 
 ```sh
-node lib/Cli.js
-node lib/Cli.js --action build --name perso --config { "key": "value" }
-node lib/Cli.js --action build --name perso --config ABSOLUTE_PATH_TO_JSON_FILE
+node ./cli/jpack.js --debug
+node ./cli/jpack.js --action build --name perso --config { "key": "value" }
+node ./cli/jpack.js --action build --name perso --config ABSOLUTE_PATH_TO_JSON_FILE
 ```
 
 Options:
@@ -45,11 +45,11 @@ Example from the "jizy-browser" extension.
 
 ***First for the default dist build***
 
-#### ./config/config.json
-```json
-{
-    "desktopBreakpoint": "900px"
-}
+#### ./cli/jpack.js
+```js
+import { jPackCli } from 'jizy-packer';
+import jPackData from '../config/jpack.js';
+jPackCli(jPackData);
 ```
 
 #### ./config/jpack.js
@@ -58,34 +58,28 @@ import fs from 'fs';
 import path from 'path';
 import { LogMe, jPackConfig } from 'jizy-packer';
 
-const jPackData = {
-    name: 'BrowserCompat',
-    alias: 'jizy-browser',
+const jPackData = function () {
+    jPackConfig.sets({
+        name: 'BrowserCompat',
+        alias: 'jizy-browser',
+        desktopBreakpoint: "900px"
+    });
 
-    onCheckConfig: () => { 
-        // add some config validation
-        const desktopBreakpoint = jPackConfig.get('desktopBreakpoint');
-        if (!desktopBreakpoint) {
-            LogMe.error('Missing desktopBreakpoint in config');
-            process.exit(1);
-        }
-    },
+    jPackConfig.set('onCheckConfig', () => { });
 
-    // generate config.less
-    onGenerateBuildJs: (code) => {
+    jPackConfig.set('onGenerateBuildJs', (code) => {
         LogMe.log('Generate config.less');
+        LogMe.log('  path: ' + path.join(jPackConfig.get('targetPath'), 'config.less'));
         const desktopBreakpoint = jPackConfig.get('desktopBreakpoint') ?? '768px';
-        let lessContent = `@desktop-breakpoint: ${desktopBreakpoint};\n`;
+        let lessContent = `@desktop-breakpoint: ${desktopBreakpoint};` + "\n";
         lessContent += `@mobile-breakpoint: @desktop-breakpoint - 1px;`;
         fs.writeFileSync(path.join(jPackConfig.get('targetPath'), 'config.less'), lessContent);
         return code;
-    },
+    });
 
-    // parse wrapped js
-    onGenerateWrappedJs: (wrapped) => wrapped,
+    jPackConfig.set('onGenerateWrappedJs', (wrapped) => wrapped);
 
-    // after packing
-    onPacked: () => { }
+    jPackConfig.set('onPacked', () => { });
 };
 
 export default jPackData;
