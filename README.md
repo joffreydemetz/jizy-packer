@@ -9,6 +9,9 @@ A CLI tool and Node.js library to generate optimized builds for your projects. I
 - Configurable via JSON and programmatic API
 - Utilities for cleaning build folders and managing configs
 - Rollup-based build process with plugin support
+- When the name of the build is "example"
+  * mirrors the base example-base folder (no override)
+  * moves the content of build/example to the example folder
 
 ## Create a jPacker
 
