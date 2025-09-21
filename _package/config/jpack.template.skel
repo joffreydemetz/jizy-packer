@@ -1,0 +1,5 @@
+import %MODULE_NAME% from '{{PREFIX}}lib/js/%MODULE_NAME%.js';
+
+import '{{PREFIX}}lib/index.less';
+
+export default %MODULE_NAME%;

@@ -5,7 +5,7 @@ A CLI tool and Node.js library to generate optimized builds for your projects. I
 
 ## Features
 
-- Command-line interface for building projects
+- Command-line interface for building projects (init & build)
 - Configurable via JSON and programmatic API
 - Utilities for cleaning build folders and managing configs
 - Rollup-based build process with plugin support
@@ -14,6 +14,13 @@ A CLI tool and Node.js library to generate optimized builds for your projects. I
   * moves the content of build/example to the example folder
 
 ## Create a jPacker
+
+Init the jizy-packer in your project:
+
+```sh
+npm install jizy-packer ^2.1 --save
+npm jizy-packer init
+```
 
 Examples in all jizy packages
 @jizy-browser 

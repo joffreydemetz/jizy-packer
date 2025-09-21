@@ -1,0 +1,5 @@
+import %MODULE_NAME% from './js/%MODULE_NAME%.js';
+
+export {
+    %MODULE_NAME%,
+};
