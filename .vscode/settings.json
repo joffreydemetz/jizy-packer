@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.js.skel": "plaintext"
+    },
+    "editor.formatOnSave": true,
+    "editor.tabSize": 4
+}

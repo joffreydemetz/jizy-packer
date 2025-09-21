@@ -1,0 +1,45 @@
+import fs from 'fs';
+import path from 'path';
+
+import {
+    LogMe,
+    jPackConfig,
+    generateLessVariablesFromConfig,
+    deleteLessVariablesFile
+} from 'jizy-packer';
+
+const jPackData = function () {
+    const lessBuildVariablesPath = path.join(jPackConfig.get('basePath'), 'lib/less / _variables.less');
+
+    jPackConfig.sets({
+        name: '%MODULE_NAME%',
+        alias: '%MODULE_ALIAS%',
+        lessVariables: {
+            desktopBreakpoint: '900px',
+            scrollbarWidth: '17px'
+            // add your custom less variables here
+        },
+        defaults: {
+            // add your custom default config here
+        }
+    });
+
+    jPackConfig.set('onCheckConfig', () => { });
+
+    jPackConfig.set('onGenerateBuildJs', (code) => {
+        LogMe.log('Build lib/less/_variables.less');
+        const lessVariables = jPackConfig.get('lessVariables') ?? {};
+        const lessOriginalVariablesPath = path.join(jPackConfig.get('basePath'), 'lib/less/variables.less');
+        generateLessVariablesFromConfig(lessOriginalVariablesPath, lessBuildVariablesPath, lessVariables);
+        return code;
+    });
+
+    jPackConfig.set('onGenerateWrappedJs', (wrapped) => wrapped);
+
+    jPackConfig.set('onPacked', () => {
+        // for projects using CSS
+        deleteLessVariablesFile(lessBuildVariablesPath);
+    });
+};
+
+export default jPackData;
