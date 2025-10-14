@@ -14,7 +14,7 @@ function copyDefaultFiles(srcDir, destDir, replacements) {
 
         if (entry.isDirectory()) {
             if (!fs.existsSync(destPath)) fs.mkdirSync(destPath);
-            copyAndReplace(srcPath, destPath, replacements);
+            copyDefaultFiles(srcPath, destPath, replacements);
             return;
         }
 
