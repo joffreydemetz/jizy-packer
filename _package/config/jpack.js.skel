@@ -9,7 +9,7 @@ import {
 } from 'jizy-packer';
 
 const jPackData = function () {
-    const lessBuildVariablesPath = path.join(jPackConfig.get('basePath'), 'lib/less / _variables.less');
+    const lessBuildVariablesPath = path.join(jPackConfig.get('basePath'), 'lib/less/_variables.less');
 
     jPackConfig.sets({
         name: '%MODULE_NAME%',

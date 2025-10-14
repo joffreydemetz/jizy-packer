@@ -1,5 +1,5 @@
 {
-  "name": "jdz/%MODULE_ALIAS%",
+  "name": "%MODULE_ALIAS%",
   "version": "1.0.0",
   "browser": "dist/js/%MODULE_ALIAS%.min.js",
   "main": "lib/index.js",
@@ -27,7 +27,7 @@
   "license": "MIT",
   "description": "",
   "dependencies": {
-    "jizy-packer": "^2.1",
+    "jizy-packer": "^2.1.0",
     "less": "^4.4.1"
   }
 }
