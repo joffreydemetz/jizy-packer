@@ -18,8 +18,8 @@ A CLI tool and Node.js library to generate optimized builds for your projects. I
 Init the jizy-packer in your project:
 
 ```sh
-npm install jizy-packer ^2.1 --save
-npm jizy-packer init
+npm install jizy-packer
+node ./node_modules/jizy-packer/cli/init.js
 ```
 
 Examples in all jizy packages

@@ -4,9 +4,9 @@
     "description": "",
     "keywords": [
         "JDZ",
-        "%MODULE_NAME"
+        "%MODULE_NAME%"
     ],
-    "homepage": "https://jdz.joffreydemetz.com/%MODULE_ALIAS%",
+    "homepage": "https://jdz.joffreydemetz.com/%MODULE_ALIAS%/",
     "license": "MIT",
     "authors": [
         {

@@ -3,29 +3,42 @@ import path from "path";
 import readline from "readline";
 import { fileURLToPath } from "url";
 
-async function copyAndReplace(srcDir, destDir, replacements) {
+function copyDefaultFiles(srcDir, destDir, replacements) {
     const entries = fs.readdirSync(srcDir, { withFileTypes: true });
-    for (const entry of entries) {
+    console.dir(entries.map(e => e.name));
+
+    entries.forEach(entry => {
         const srcPath = path.join(srcDir, entry.name);
         const destName = entry.name.replace(/\.skel$/, "");
         const destPath = path.join(destDir, destName);
 
-        if (fs.existsSync(destPath)) {
-            continue; // Skip existing files
-        }
-
         if (entry.isDirectory()) {
             if (!fs.existsSync(destPath)) fs.mkdirSync(destPath);
-            await copyAndReplace(srcPath, destPath, replacements);
+            copyAndReplace(srcPath, destPath, replacements);
             return;
         }
 
+        if (fs.existsSync(destPath)) {
+            if (destName !== 'package.json') {
+                console.log(`[SKIP] ${destName}`);
+                return; // Skip existing files & folders
+            }
+
+            // read json file and check if the name of the package is set
+            const pkg = JSON.parse(fs.readFileSync(destPath, "utf8"));
+            if (pkg.name) {
+                console.log(`[SKIP] ${destName}`);
+                return; // skip existing package.json with name set
+            }
+        }
+
+        console.log(`[COPY] ${destName}`);
         let content = fs.readFileSync(srcPath, "utf8");
         Object.entries(replacements).forEach(([key, value]) => {
             content = content.replace(new RegExp(`%${key}%`, "g"), value);
         });
         fs.writeFileSync(destPath, content, "utf8");
-    }
+    });
 }
 
 function askQuestion(query) {
@@ -54,5 +67,12 @@ const __dirname = path.dirname(__filename);
 const srcDir = path.join(__dirname, "..", "_package");
 const destDir = process.cwd();
 
-console.log(srcDir, destDir);
-await copyAndReplace(srcDir, destDir, answers);
+console.log(srcDir);
+console.log(destDir);
+copyDefaultFiles(srcDir, destDir, answers);
+
+// add an empty js file to start with
+const mainJs = path.join(destDir, moduleName + '.js');
+if (!fs.existsSync(mainJs)) {
+    fs.writeFileSync(mainJs, '', 'utf8');
+}
