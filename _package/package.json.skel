@@ -10,6 +10,9 @@
     "lib/*"
   ],
   "scripts": {
+    "jpack:init": "node ./node_modules/jizy-packer/cli/init.js",
+    "jpack:example": "node ./cli/jpack.js --action build --name example",
+    "jpack:example-debug": "node ./cli/jpack.js --action build --name example --debug",
     "jpack:export": "node ./cli/jpack.js --action build --name perso",
     "jpack:export-debug": "node ./cli/jpack.js --action build --name perso --debug",
     "jpack:dist": "node ./cli/jpack.js",
