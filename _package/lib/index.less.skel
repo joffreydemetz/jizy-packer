@@ -1,16 +1,16 @@
-@import url("less/_variables.less");
-@import url("less/variables.less");
-// @import url("less/animations.less");
-// @import url("less/structure.less");
+@import (optional) url("less/_variables.less");
+@import (optional) url("less/variables.less");
+@import (optional) url("less/animations.less");
+@import (optional) url("less/structure.less");
 
 @media (max-width: @mobile-breakpoint) {
-    @import url("less/mobile.less");
+    @import (optional) url("less/mobile.less");
 }
 
 @media (min-width: @desktop-breakpoint) {
-    @import url("less/screen.less");
+    @import (optional) url("less/screen.less");
 }
 
 @media print {
-    @import url("less/print.less");
+    @import (optional) url("less/print.less");
 }
