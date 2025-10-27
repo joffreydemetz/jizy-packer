@@ -7,6 +7,31 @@ function loadYourConfig() {
     const configPath = path.join(process.cwd(), "me.json");
     if (fs.existsSync(configPath)) {
         const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+
+        if(config.keywords && Array.isArray(config.keywords)) {
+            config.keywords = config.keywords.map(k => k.trim()).filter(k => k.length > 0);
+        }
+        if (config.gitAccount) {
+            config.GIT_ACCOUNT = config.gitAccount;
+        }
+        if (config.gitPrefix) {
+            config.GIT_PREFIX = config.gitPrefix;
+        }
+        if (config.authorName) {
+            config.AUTHOR_NAME = config.authorName;
+        }
+        if (config.authorEmail) {
+            config.AUTHOR_EMAIL = config.authorEmail;
+        }
+        if (config.authorWebsite) {
+            config.AUTHOR_WEBSITE = config.authorWebsite;
+        }
+        if (config.homepagePrefix) {
+            config.HOMEPAGE_PREFIX = config.homepagePrefix;
+        }
+        if (config.license) {
+            config.LICENSE = config.license;
+        }
         return config;
     }
     return {};
@@ -194,7 +219,8 @@ const answers = {
     GIT_REPO: null,
     LESS: null,
     YEAR: null,
-    HOMEPAGE_PREFIX: null
+    HOMEPAGE_PREFIX: null,
+    GIT_PREFIX: null
 };
 
 const packageJson = loadActualPackageJsonFile(process.cwd(), defaults);
@@ -241,6 +267,9 @@ console.log('/** ');
 console.log(' * Git Repository Information');
 console.log(' */');
 
+if (!defaults.GIT_MODULE && defaults.GIT_PREFIX) {
+    defaults.GIT_MODULE = `${defaults.GIT_PREFIX}/${answers.MODULE_ALIAS}`;
+}
 answers.GIT_MODULE = await askQuestion("Git module (e.g. your-account/module-name): ", answers.GIT_MODULE, defaults.GIT_MODULE);
 if (!answers.GIT_MODULE) {
     console.log('Git module is required.');
@@ -256,7 +285,7 @@ if (!defaults.GIT_REPO) {
 }
 
 answers.GIT_ACCOUNT = await askQuestion("Git account (e.g. your-account): ", answers.GIT_ACCOUNT, defaults.GIT_ACCOUNT);
-answers.GIT_REPO = await askQuestion("Git repo (e.g. module-name): ", answers.GIT_REPO, defaults.GIT_REPO);
+answers.GIT_REPO = await askQuestion("Git repo (e.g. prefix/module-name): ", answers.GIT_REPO, defaults.GIT_REPO);
 
 console.log('/** ');
 console.log(' * Author Information');
