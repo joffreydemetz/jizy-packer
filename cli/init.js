@@ -106,8 +106,6 @@ function loadActualComposerJsonFile(defaults) {
         authors: []
     }
 
-    const defaults = {};
-
     const composerPath = path.join(process.cwd(), "composer.json");
 
     if (fs.existsSync(composerPath)) {
