@@ -3,9 +3,128 @@ import path from "path";
 import readline from "readline";
 import { fileURLToPath } from "url";
 
+function loadYourConfig() {
+    const configPath = path.join(process.cwd(), "me.json");
+    if (fs.existsSync(configPath)) {
+        const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+        return config;
+    }
+    return {};
+}
+
+function loadActualPackageJsonFile(defaults) {
+    const pkg = {
+        name: null,
+        version: '1.0.0',
+        browser: '',
+        main: 'lib/index.js',
+        type: 'module',
+        jizy: 'dist/',
+        licence: 'MIT',
+        homepage: '',
+        description: '',
+        keywords: [],
+        files: [],
+        scripts: {},
+        dependencies: {}
+    };
+
+    const pkgPath = path.join(process.cwd(), "package.json");
+
+    if (fs.existsSync(pkgPath)) {
+        const current = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+        pkg = Object.assign({}, pkg, current);
+
+        if (pkg.name) {
+            defaults.MODULE_ALIAS = pkg.name;
+        }
+
+        if (pkg.description) {
+            defaults.DESCRIPTION = pkg.description;
+        }
+
+        if (pkg.keywords) {
+            defaults.KEYWORDS = pkg.keywords;
+        }
+
+        if (pkg.homepage) {
+            defaults.HOMEPAGE = pkg.homepage;
+        }
+
+        if (pkg.author) {
+            if (typeof pkg.author === 'string') {
+                const authorMatch = pkg.author.match(/(.*?)\s*<([^>]+)>\s*\(([^)]+)\)/);
+                if (authorMatch) {
+                    defaults.AUTHOR_NAME = authorMatch[1];
+                    defaults.AUTHOR_EMAIL = authorMatch[2];
+                    defaults.AUTHOR_WEBSITE = authorMatch[3];
+                }
+            } else {
+                defaults.AUTHOR_NAME = pkg.author.name;
+                defaults.AUTHOR_EMAIL = pkg.author.email;
+                defaults.AUTHOR_WEBSITE = pkg.author.url;
+            }
+        }
+    }
+
+    return { pkg, defaults };
+}
+
+function loadActualComposerJsonFile(defaults) {
+    const composer = {
+        name: null,
+        type: 'library',
+        description: '',
+        keywords: [],
+        homepage: '',
+        license: 'MIT',
+        authors: []
+    }
+
+    const defaults = {};
+
+    const composerPath = path.join(process.cwd(), "composer.json");
+
+    if (fs.existsSync(composerPath)) {
+        const current = JSON.parse(fs.readFileSync(composerPath, "utf8"));
+        composer = Object.assign({}, composer, current);
+
+        if (composer.name) {
+            defaults.GIT_MODULE = composer.name;
+        }
+
+        if (!defaults.DESCRIPTION && composer.description) {
+            defaults.DESCRIPTION = composer.description;
+        }
+
+        if (defaults.KEYWORDS && composer.keywords) {
+            defaults.KEYWORDS = composer.keywords;
+        }
+
+        if (!defaults.HOMEPAGE && composer.homepage) {
+            defaults.HOMEPAGE = composer.homepage;
+        }
+
+        if (composer.authors && composer.authors.length > 0) {
+            const author = composer.authors[0];
+            if (!defaults.AUTHOR_NAME && author.name) {
+                defaults.AUTHOR_NAME = author.name;
+            }
+            if (!defaults.AUTHOR_EMAIL && author.email) {
+                defaults.AUTHOR_EMAIL = author.email;
+            }
+            if (!defaults.AUTHOR_WEBSITE && author.homepage) {
+                defaults.AUTHOR_WEBSITE = author.homepage;
+            }
+        }
+    }
+
+    return { composer, defaults };
+}
+
 function copyDefaultFiles(srcDir, destDir, replacements) {
     const entries = fs.readdirSync(srcDir, { withFileTypes: true });
-    console.dir(entries.map(e => e.name));
+    // console.dir(entries.map(e => e.name));
 
     entries.forEach(entry => {
         const srcPath = path.join(srcDir, entry.name);
@@ -19,17 +138,8 @@ function copyDefaultFiles(srcDir, destDir, replacements) {
         }
 
         if (fs.existsSync(destPath)) {
-            if (destName !== 'package.json') {
-                console.log(`[SKIP] ${destName}`);
-                return; // Skip existing files & folders
-            }
-
-            // read json file and check if the name of the package is set
-            const pkg = JSON.parse(fs.readFileSync(destPath, "utf8"));
-            if (pkg.name) {
-                console.log(`[SKIP] ${destName}`);
-                return; // skip existing package.json with name set
-            }
+            console.log(`[SKIP] ${destName}`);
+            return;
         }
 
         console.log(`[COPY] ${destName}`);
@@ -41,34 +151,291 @@ function copyDefaultFiles(srcDir, destDir, replacements) {
     });
 }
 
-function askQuestion(query) {
+function askQuestion(query, current = null, def = null) {
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
     });
-    return new Promise(resolve => rl.question(query, ans => {
+
+    const hasCurrent = current !== null && current !== undefined;
+    const defaultValue = hasCurrent ? current : def;
+
+    return new Promise(resolve => rl.question(`${query} [${defaultValue}]: `, answer => {
         rl.close();
-        resolve(ans);
+
+        if (answer === '' && hasCurrent) {
+            resolve(current);
+            return;
+        }
+
+        resolve(def);
     }));
 }
 
-const moduleName = await askQuestion("Module name: ");
-const moduleAlias = await askQuestion("Module alias: ");
-
-// Interactive CLI prompts
-const answers = {
-    MODULE_NAME: moduleName,
-    MODULE_ALIAS: moduleAlias
-};
-
-// Copy files from _package to current directory, replacing %KEY% and removing .skel
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const srcDir = path.join(__dirname, "..", "_package");
 const destDir = process.cwd();
+console.log('current working directory:', destDir);
 
-console.log(srcDir);
-console.log(destDir);
+let defaults = loadYourConfig();
+
+const answers = {
+    MODULE_NAME: null,
+    MODULE_ALIAS: null,
+    DESCRIPTION: null,
+    KEYWORDS: null,
+    HOMEPAGE: null,
+    AUTHOR_NAME: null,
+    AUTHOR_EMAIL: null,
+    AUTHOR_WEBSITE: null,
+    GIT_MODULE: null,
+    GIT_ACCOUNT: null,
+    GIT_REPO: null,
+    LESS: null,
+    YEAR: null,
+    HOMEPAGE_PREFIX: null
+};
+
+const packageJson = loadActualPackageJsonFile(process.cwd(), defaults);
+defaults = packageJson.defaults;
+const pkg = packageJson.pkg;
+
+const composerJson = loadActualComposerJsonFile(process.cwd(), defaults);
+defaults = composerJson.defaults;
+const composer = composerJson.composer;
+
+if (pkg.dependencies && pkg.dependencies.less) {
+    answers.LESS = pkg.dependencies.less;
+}
+
+if (!defaults.YEAR) {
+    defaults.YEAR = new Date().getFullYear();
+}
+
+if (!defaults.MODULE_NAME) {
+    defaults.MODULE_NAME = path.basename(process.cwd());
+}
+
+console.log('/** ');
+console.log(' * Module Information');
+console.log(' */');
+
+answers.MODULE_NAME = await askQuestion("Module name* (e.g. ModuleName): ", answers.MODULE_NAME, defaults.MODULE_NAME);
+if (!answers.MODULE_NAME) {
+    console.error("Module name is required.");
+    process.exit(1);
+}
+
+if (!defaults.MODULE_ALIAS) {
+    defaults.MODULE_ALIAS = answers.MODULE_NAME.replace(/([A-Z])/g, (g, m1, offset) => (offset > 0 ? '-' : '') + m1.toLowerCase());
+}
+
+answers.MODULE_ALIAS = await askQuestion("Module alias* (e.g. module-name): ", answers.MODULE_ALIAS, defaults.MODULE_ALIAS);
+if (!answers.MODULE_ALIAS) {
+    console.error("Module alias is required.");
+    process.exit(1);
+}
+
+console.log('/** ');
+console.log(' * Git Repository Information');
+console.log(' */');
+
+answers.GIT_MODULE = await askQuestion("Git module (e.g. your-account/module-name): ", answers.GIT_MODULE, defaults.GIT_MODULE);
+if (!answers.GIT_MODULE) {
+    console.log('Git module is required.');
+    process.exit(1);
+}
+
+const [defaultGitAccount, defaultGitRepo] = answers.GIT_MODULE.split('/');
+if (!defaults.GIT_ACCOUNT) {
+    defaults.GIT_ACCOUNT = defaultGitAccount;
+}
+if (!defaults.GIT_REPO) {
+    defaults.GIT_REPO = defaultGitRepo;
+}
+
+answers.GIT_ACCOUNT = await askQuestion("Git account (e.g. your-account): ", answers.GIT_ACCOUNT, defaults.GIT_ACCOUNT);
+answers.GIT_REPO = await askQuestion("Git repo (e.g. module-name): ", answers.GIT_REPO, defaults.GIT_REPO);
+
+console.log('/** ');
+console.log(' * Author Information');
+console.log(' * (optional)');
+console.log(' */');
+
+answers.AUTHOR_NAME = await askQuestion("Author name (e.g. Your Name): ", answers.AUTHOR_NAME, defaults.AUTHOR_NAME);
+answers.AUTHOR_EMAIL = await askQuestion("Author email (e.g. your.email@example.com): ", answers.AUTHOR_EMAIL, defaults.AUTHOR_EMAIL);
+answers.AUTHOR_WEBSITE = await askQuestion("Author website (e.g. https://your-website.com): ", answers.AUTHOR_WEBSITE, defaults.AUTHOR_WEBSITE);
+
+console.log('/**');
+console.log(' * Description, Keywords, Homepage');
+console.log(' * Used in package.json and optionaly in composer.json');
+console.log(' */');
+
+answers.DESCRIPTION = await askQuestion("Description: ", answers.DESCRIPTION, defaults.DESCRIPTION);
+
+if (!defaults.KEYWORDS) {
+    defaults.KEYWORDS = [];
+    defaults.KEYWORDS.push(`jizy, ${answers.MODULE_NAME}`);
+}
+
+const keywordsInput = await askQuestion("Keywords (comma separated): ", answers.KEYWORDS ? answers.KEYWORDS.join(',') : null, defaults.KEYWORDS.join(', '));
+if (keywordsInput) {
+    answers.KEYWORDS = keywordsInput.split(',')
+        .map(k => k.trim())
+        .filter(k => k.length > 0)
+        .map(k => `"${k}"`);
+}
+
+// unique keywords
+answers.KEYWORDS = Array.from(new Set(answers.KEYWORDS));
+
+if (!defaults.HOMEPAGE && defaults.HOMEPAGE_PREFIX) {
+    defaults.HOMEPAGE_PREFIX = defaults.HOMEPAGE_PREFIX.replace(/^\/+|\/+$/g, '');
+    defaults.HOMEPAGE = `${defaults.HOMEPAGE_PREFIX}/${answers.MODULE_ALIAS}`;
+}
+answers.HOMEPAGE = await askQuestion("Homepage: ", answers.HOMEPAGE, defaults.HOMEPAGE);
+
+console.log('/** ');
+console.log(' * LESS (optional)');
+console.log(' */');
+if (answers.LESS === null) {
+    answers.LESS = await askQuestion("Do you want to use LESS for styles? (y/N): ", null, 'N');
+    answers.LESS = (answers.LESS.toLowerCase().substr(0, 1) === 'y');
+} else {
+    console.log(`LESS usage detected in existing package.json, keeping it as is.`);
+}
+
+answers.YEAR = await askQuestion("Debut year for license file: ", answers.YEAR, defaults.YEAR);
+
+pkg.name = answers.MODULE_ALIAS;
+pkg.version = pkg.version || '1.0.0';
+pkg.browser = pkg.browser || `dist/js/${answers.MODULE_ALIAS}.min.js`;
+pkg.main = pkg.main || 'lib/index.js';
+pkg.type = pkg.type || 'module';
+pkg.jizy = 'dist/';
+pkg.description = answers.DESCRIPTION || '';
+pkg.keywords = answers.KEYWORDS || [];
+pkg.homepage = answers.HOMEPAGE || '';
+if (!pkg.files) {
+    pkg.files = [];
+}
+pkg.files.push('dist/*');
+pkg.files.push('lib/*');
+
+// unique files
+pkg.files = Array.from(new Set(pkg.files));
+
+pkg.repository = {
+    type: "git",
+    url: `git+https://github.com/${answers.GIT_ACCOUNT}/${answers.GIT_REPO}.git`
+};
+
+if (answers.AUTHOR_NAME && answers.AUTHOR_EMAIL && answers.AUTHOR_WEBSITE) {
+    pkg.author = '%AUTHOR_NAME% <%AUTHOR_EMAIL> (%AUTHOR_WEBSITE%)';
+} else if (answers.AUTHOR_NAME || answers.AUTHOR_EMAIL || answers.AUTHOR_WEBSITE) {
+    pkg.author = {};
+    if (answers.AUTHOR_NAME) pkg.author.name = answers.AUTHOR_NAME;
+    if (answers.AUTHOR_EMAIL) pkg.author.email = answers.AUTHOR_EMAIL;
+    if (answers.AUTHOR_WEBSITE) pkg.author.url = answers.AUTHOR_WEBSITE;
+}
+
+pkg.scripts = Object.assign({}, pkg.scripts, {
+    "jpack:example": "node ./cli/jpack.js --action build --name example",
+    "jpack:example-debug": "node ./cli/jpack.js --action build --name example --debug",
+    "jpack:export": "node ./cli/jpack.js --action build --name perso",
+    "jpack:export-debug": "node ./cli/jpack.js --action build --name perso --debug",
+    "jpack:dist": "node ./cli/jpack.js",
+    "jpack:dist-debug": "node ./cli/jpack.js --debug"
+});
+
+if (answers.LESS) {
+    pkg.dependencies = Object.assign({}, pkg.dependencies, {
+        "less": "^4.1.3"
+    });
+}
+
+// remove empty fields
+Object.keys(pkg).forEach(key => {
+    if (!pkg[key]) {
+        delete pkg[key];
+    }
+});
+
+composer.name = answers.GIT_MODULE;
+composer.type = composer.type || 'library';
+composer.license = composer.license || 'MIT';
+composer.description = composer.description || answers.DESCRIPTION || '';
+composer.keywords = composer.keywords || answers.KEYWORDS || [];
+composer.homepage = composer.homepage || answers.HOMEPAGE || '';
+
+let author = null;
+if (answers.AUTHOR_NAME || answers.AUTHOR_EMAIL || answers.AUTHOR_WEBSITE) {
+    author = {};
+    if (answers.AUTHOR_NAME) author.name = answers.AUTHOR_NAME;
+    if (answers.AUTHOR_EMAIL) author.email = answers.AUTHOR_EMAIL;
+    if (answers.AUTHOR_WEBSITE) author.homepage = answers.AUTHOR_WEBSITE;
+    author.role = 'Lead';
+}
+
+if (author) {
+    if (composer.authors) {
+        // check if the author is already present
+        let found = false;
+        composer.authors.forEach(author => {
+            if (author.name === answers.AUTHOR_NAME &&
+                author.email === answers.AUTHOR_EMAIL) {
+                found = true;
+            }
+        });
+        if (!found) {
+            composer.authors.push(author);
+        }
+    }
+    else {
+        composer.authors = [];
+        composer.authors.push(author);
+    }
+}
+
+// remove empty fields
+Object.keys(composer).forEach(key => {
+    if (!composer[key]) {
+        delete composer[key];
+    }
+});
+
+// display the content to be written for confirmation
+console.log("The following content will be written to package.json:");
+console.log(JSON.stringify(pkg, null, 2));
+console.log("The following content will be written to composer.json:");
+console.log(JSON.stringify(composer, null, 2));
+
+const confirm = await askQuestion("Do you want to proceed? (y/N): ", null, 'N');
+if (confirm.toLowerCase().substr(0, 1) !== 'y') {
+    console.log("Aborted by user.");
+    process.exit(0);
+}
+
+fs.writeFileSync(path.join(destDir, "package.json"), JSON.stringify(pkg, null, 2));
+fs.writeFileSync(path.join(destDir, "composer.json"), JSON.stringify(composer, null, 2));
+
+//
+
+if (answers.LESS) {
+    console.log('Updating npm packages for LESS to be installed...');
+
+    try {
+        execSync('npm install less', { stdio: 'inherit', cwd: destDir });
+        console.log('✓ less package installed successfully');
+    } catch (error) {
+        console.error('✗ Failed to install less package:', error.message);
+        console.log('You can install it manually with: npm install less or npm update');
+    }
+}
+
+// console.log(srcDir);
+// console.log(destDir);
 copyDefaultFiles(srcDir, destDir, answers);
 
 // add an empty js file to start with

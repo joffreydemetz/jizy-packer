@@ -1,0 +1,9 @@
+{
+    "HOMEPAGE_PREFIX": "https://your-website.com",
+    "AUTHOR_NAME": "Your Name",
+    "AUTHOR_EMAIL": "your.email@example.com?",
+    "AUTHOR_WEBSITE": "https://your-website.com",
+    "GIT_ACCOUNT": "your-git-username",
+    "LICENSE": "MIT",
+    "KEYWORDS": "keyword1, keyword2, keyword3"
+}
