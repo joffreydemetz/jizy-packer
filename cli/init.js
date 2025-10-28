@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import readline from "readline";
 import { fileURLToPath } from "url";
+import { execSync } from "child_process";
 
 function loadYourConfig(baseDir, defaults) {
     const configPath = path.join(baseDir, "me.json");
@@ -94,6 +95,10 @@ function loadActualPackageJsonFile(baseDir, defaults) {
                 defaults.AUTHOR_WEBSITE = pkg.author.url;
             }
         }
+
+        if (pkg.license) {
+            defaults.LICENSE = pkg.license;
+        }
     }
 
     return { pkg, defaults };
@@ -124,7 +129,7 @@ function loadActualComposerJsonFile(baseDir, defaults) {
             defaults.DESCRIPTION = composer.description;
         }
 
-        if (defaults.KEYWORDS && composer.keywords) {
+        if (!defaults.KEYWORDS && composer.keywords) {
             defaults.KEYWORDS = composer.keywords;
         }
 
@@ -240,7 +245,7 @@ defaults = composerJson.defaults;
 const composer = composerJson.composer;
 
 if (pkg.dependencies && pkg.dependencies.less) {
-    answers.LESS = pkg.dependencies.less;
+    answers.LESS = true;
 }
 
 if (!defaults.YEAR) {
@@ -489,9 +494,15 @@ if (answers.LESS) {
 // console.log(srcDir);
 // console.log(baseDir);
 copyDefaultFiles(srcDir, baseDir, answers);
+console.log('✓ copied default files');
 
 // add an empty js file to start with
-const mainJs = path.join(baseDir, moduleName + '.js');
+const mainJsDir = path.join(baseDir, 'lib', 'js');
+if (!fs.existsSync(mainJsDir)) {
+    fs.mkdirSync(mainJsDir, { recursive: true });
+}
+const mainJs = path.join(mainJsDir, answers.MODULE_NAME + '.js');
 if (!fs.existsSync(mainJs)) {
     fs.writeFileSync(mainJs, '', 'utf8');
 }
+console.log('✓ created main js file');
