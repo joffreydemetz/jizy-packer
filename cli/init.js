@@ -340,7 +340,7 @@ answers.HOMEPAGE = await askQuestion("Homepage: ", answers.HOMEPAGE, defaults.HO
 
 console.log('');
 console.log('****** LESS (optional)');
-console.log(' Used for styles compilation if needed');
+console.log('Used for styles compilation if needed');
 if (answers.LESS === null) {
     const lessInput = await askQuestion("Use LESS for styles? (y/N): ", null, 'N');
     answers.LESS = (lessInput.toLowerCase() === 'y');
@@ -371,11 +371,11 @@ pkg.files = Array.from(new Set(pkg.files));
 
 pkg.repository = {
     type: "git",
-    url: `git + https://github.com/${answers.GIT_ACCOUNT}/${answers.GIT_REPO}.git`
+    url: `git+https://github.com/${answers.GIT_ACCOUNT}/${answers.GIT_REPO}.git`
 };
 
 if (answers.AUTHOR_NAME && answers.AUTHOR_EMAIL && answers.AUTHOR_WEBSITE) {
-    pkg.author = '%AUTHOR_NAME% <%AUTHOR_EMAIL> (%AUTHOR_WEBSITE%)';
+    pkg.author = answers.AUTHOR_NAME + ' <' + answers.AUTHOR_EMAIL + '> (' + answers.AUTHOR_WEBSITE + ')';
 } else if (answers.AUTHOR_NAME || answers.AUTHOR_EMAIL || answers.AUTHOR_WEBSITE) {
     pkg.author = {};
     if (answers.AUTHOR_NAME) pkg.author.name = answers.AUTHOR_NAME;
@@ -458,6 +458,7 @@ Object.keys(composer).forEach(key => {
 console.log('');
 console.log("The following content will be written to package.json:");
 console.log(JSON.stringify(pkg, null, 2));
+console.log('');
 console.log("The following content will be written to composer.json:");
 console.log(JSON.stringify(composer, null, 2));
 console.log('');
