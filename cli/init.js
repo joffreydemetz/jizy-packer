@@ -397,6 +397,9 @@ pkg.scripts = Object.assign({}, pkg.scripts, {
     "jpack:dist-debug": "node ./cli/jpack.js --debug"
 });
 
+// force less dependency for now 
+// @todo update builder to manage LESS not installed case
+answers.LESS = true;
 if (answers.LESS) {
     pkg.dependencies = Object.assign({}, pkg.dependencies, {
         "less": "^4.1.3"
@@ -480,7 +483,7 @@ fs.writeFileSync(path.join(baseDir, "composer.json"), JSON.stringify(composer, n
 //
 
 if (answers.LESS) {
-    console.log('Updating npm packages for LESS to be installed...');
+    console.log('Check LESS install...');
 
     try {
         execSync('npm install less', { stdio: 'inherit', cwd: baseDir });
