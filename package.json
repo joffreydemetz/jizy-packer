@@ -6,6 +6,7 @@
     "_example",
     "_package",
     "cli/init.js",
+    "cli/helper.js",
     "lib/*.js"
   ],
   "main": "lib/index.js",
