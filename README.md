@@ -145,7 +145,7 @@ Options:
 ### Programmatic
 
 ```js
-import jPackBuild from './lib/Build.js';
+import { jPackBuild } from 'jizy-packer';
 
 await jPackBuild({
 	action: 'build',
@@ -154,3 +154,13 @@ await jPackBuild({
 	debug: true
 });
 ```
+
+## Development
+
+Run the example to test the full pipeline (scaffold + build):
+
+```sh
+npm run example
+```
+
+This creates a dummy "MyWidget" package in `examples/output/`, builds it with jizy-packer, and verifies the output.
