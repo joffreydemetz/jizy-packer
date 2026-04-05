@@ -1,6 +1,6 @@
 {
   "name": "jizy-packer",
-  "version": "2.1.41",
+  "version": "2.1.43",
   "type": "module",
   "files": [
     "_example",
@@ -9,6 +9,9 @@
     "lib/*.js"
   ],
   "main": "lib/index.js",
+  "scripts": {
+    "example": "node examples/my-widget.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/joffreydemetz/jizy-packer.git"
@@ -25,11 +28,15 @@
     "@rollup/plugin-commonjs": "^28.0.3",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^16.0.1",
-    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-terser": "^1.0.0",
     "@rollup/plugin-url": "^8.0.2",
     "postcss": "^8.5.3",
-    "rollup": "^4.40.1",
+    "rollup": "^4.60.1",
     "rollup-plugin-postcss": "^4.0.2",
     "yargs": "^17.7.2"
+  },
+  "overrides": {
+    "svgo": "2.8.2",
+    "yaml@1": "1.10.3"
   }
 }
