@@ -369,6 +369,7 @@ if (!pkg.files) {
     pkg.files = [];
 }
 pkg.files.push('dist/*');
+pkg.files.push('example/*');
 pkg.files.push('lib/*');
 
 // unique files
