@@ -73,7 +73,7 @@ const pkg = {
     license: answers.LICENSE,
     dependencies: {
         'jizy-packer': 'file:../../..',
-        'less': '^4.1.3',
+        'less': '^4.5.1',
     },
 };
 

@@ -205,7 +205,7 @@ pkg.scripts = Object.assign({}, pkg.scripts, {
 answers.LESS = true;
 if (answers.LESS) {
     pkg.dependencies = Object.assign({}, pkg.dependencies, {
-        "less": "^4.1.3"
+        "less": "^4.5.1"
     });
 }
 
