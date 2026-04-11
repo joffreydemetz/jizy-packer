@@ -1,12 +1,9 @@
+.work/
 cli/
 config/
 example/
 node_modules/
-src/
-vendor/
 .babelrc
 .gitignore
-composer.json
-composer.lock
 me.json
 package-lock.json
