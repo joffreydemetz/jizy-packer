@@ -25,6 +25,7 @@
   "author": "Joffrey Demetz <joffrey.demetz@gmail.com> (https://joffreydemetz.com/)",
   "license": "MIT",
   "description": "CLI app to generate optimized builds.",
+  "homepage": "https://jizy.joffreydemetz.com/packer",
   "dependencies": {
     "@rollup/plugin-commonjs": "^28.0.3",
     "@rollup/plugin-json": "^6.1.0",
