@@ -1,6 +1,6 @@
 {
   "name": "jizy-packer",
-  "version": "2.1.47",
+  "version": "2.2.0",
   "type": "module",
   "files": [
     "_example",
