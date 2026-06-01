@@ -2,6 +2,16 @@
   "name": "jizy-packer",
   "version": "2.2.0",
   "type": "module",
+  "main": "lib/index.js",
+  "author": "Joffrey Demetz <joffrey.demetz@gmail.com> (https://joffreydemetz.com/)",
+  "license": "MIT",
+  "description": "CLI app to generate optimized builds.",
+  "homepage": "https://jizy.joffreydemetz.com/packer",
+  "keywords": [
+    "jizy",
+    "packer",
+    "utilities"
+  ],
   "files": [
     "_example",
     "_package",
@@ -9,7 +19,6 @@
     "cli/helper.js",
     "lib/*.js"
   ],
-  "main": "lib/index.js",
   "scripts": {
     "example": "node examples/my-widget.js"
   },
@@ -17,15 +26,6 @@
     "type": "git",
     "url": "git+https://github.com/joffreydemetz/jizy-packer.git"
   },
-  "keywords": [
-    "jizy",
-    "packer",
-    "utilities"
-  ],
-  "author": "Joffrey Demetz <joffrey.demetz@gmail.com> (https://joffreydemetz.com/)",
-  "license": "MIT",
-  "description": "CLI app to generate optimized builds.",
-  "homepage": "https://jizy.joffreydemetz.com/packer",
   "dependencies": {
     "@rollup/plugin-commonjs": "^28.0.3",
     "@rollup/plugin-json": "^6.1.0",
