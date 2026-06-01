@@ -20,6 +20,7 @@
     "lib/*.js"
   ],
   "scripts": {
+    "test": "node --test \"tests/*.test.js\"",
     "example": "node examples/my-widget.js"
   },
   "repository": {

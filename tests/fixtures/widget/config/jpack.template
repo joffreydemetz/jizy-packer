@@ -1,0 +1,3 @@
+import Widget from '{{PREFIX}}lib/js/widget.js';
+
+export default Widget;
